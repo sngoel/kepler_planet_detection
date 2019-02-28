@@ -52,10 +52,10 @@ p = [int(x) for x in np.linspace(start = 10, stop = 1, num = 5)]
 knc = KNeighborsClassifier() #n_neighbors, p
 abc = AdaBoostClassifier() #n_estimators
 xgb = XGBClassifier() #n_estimators, max_depth
-dtc = DecisionTreeClassifier() #max_depth, min_smaples_split, min_samples_leaf
-etc = ExtraTreesClassifier() #n_estimators, max_depth, min_smaples_split, min_samples_leaf
-rfc = RandomForestClassifier() #n_estimators, max_depth, min_smaples_split, min_samples_leaf
-gbc = GradientBoostingClassifier() #n_estimators, max_depth, min_smaples_split, min_samples_leaf
+dtc = DecisionTreeClassifier() #max_depth, min_samples_split, min_samples_leaf
+etc = ExtraTreesClassifier() #n_estimators, max_depth, min_samples_split, min_samples_leaf
+rfc = RandomForestClassifier() #n_estimators, max_depth, min_samples_split, min_samples_leaf
+gbc = GradientBoostingClassifier() #n_estimators, max_depth, min_samples_split, min_samples_leaf
 
 kfold = StratifiedKFold(n_splits = 10, shuffle = True, random_state = 7)
 
@@ -66,7 +66,7 @@ plt.gca().set_prop_cycle(plt.cycler('color', plt.cm.jet(np.linspace(0, 1, len(ma
 param_grid = dict(n_neighbors = n_neighbors,
 				  p = p)
 
-knc_grid_search = GridSearchCV(knc, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold, verbose = 2)
+knc_grid_search = GridSearchCV(knc, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold)
 knc_grid_result = knc_grid_search.fit(X, Y)
 
 # summarize results
@@ -82,7 +82,7 @@ for mean, stdev, param in zip(means, stds, params):
 #Create the param frid
 param_grid = dict(n_estimators = n_estimators)
 
-abc_grid_search = GridSearchCV(abc, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold, verbose = 2)
+abc_grid_search = GridSearchCV(abc, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold)
 abc_grid_result = abc_grid_search.fit(X, Y)
 
 # summarize results
@@ -100,7 +100,7 @@ for mean, stdev, param in zip(means, stds, params):
 param_grid = dict(n_estimators = n_estimators,
 				  max_depth = max_depth)
 
-xgb_grid_search = GridSearchCV(xgb, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold, verbose = 2)
+xgb_grid_search = GridSearchCV(xgb, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold)
 xgb_grid_result = xgb_grid_search.fit(X, Y)
 
 # summarize results
@@ -114,10 +114,10 @@ for mean, stdev, param in zip(means, stds, params):
 ###############################################################################################################
 #Create the param frid
 param_grid = dict(max_depth = max_depth,
-				  min_smaples_split = min_smaples_split,
+				  min_samples_split = min_samples_split,
 				  min_samples_leaf = min_samples_leaf)
 
-dtc_grid_search = GridSearchCV(dtc, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold, verbose = 2)
+dtc_grid_search = GridSearchCV(dtc, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold)
 dtc_grid_result = dtc_grid_search.fit(X, Y)
 
 # summarize results
@@ -132,10 +132,10 @@ for mean, stdev, param in zip(means, stds, params):
 #Create the param frid
 param_grid = dict(n_estimators = n_estimators,
 				  max_depth = max_depth,
-				  min_smaples_split = min_smaples_split,
+				  min_samples_split = min_samples_split,
 				  min_samples_leaf = min_samples_leaf)
 
-etc_grid_search = GridSearchCV(etc, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold, verbose = 2)
+etc_grid_search = GridSearchCV(etc, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold)
 etc_grid_result = etc_grid_search.fit(X, Y)
 
 # summarize results
@@ -147,7 +147,7 @@ for mean, stdev, param in zip(means, stds, params):
 	print("%f (%f) with: %r" % (mean, stdev, param))
 
 
-rfc_grid_search = GridSearchCV(rfc, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold, verbose = 2)
+rfc_grid_search = GridSearchCV(rfc, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold)
 rfc_grid_result = rfc_grid_search.fit(X, Y)
 
 # summarize results
@@ -159,7 +159,7 @@ for mean, stdev, param in zip(means, stds, params):
 	print("%f (%f) with: %r" % (mean, stdev, param))
 
 
-gbc_grid_search = GridSearchCV(gbc, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold, verbose = 2)
+gbc_grid_search = GridSearchCV(gbc, param_grid, scoring = "neg_log_loss", n_jobs = -1, cv = kfold)
 gbc_grid_result = gbc_grid_search.fit(X, Y)
 
 # summarize results
