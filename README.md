@@ -1,1 +1,1 @@
-# kepler_planet_detection
+# Kepler Planet Detection
