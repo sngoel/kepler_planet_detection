@@ -14,40 +14,37 @@ from sklearn.model_selection import StratifiedKFold
 # Setting a random seed for reproducability
 np.random.seed(7)
 
-# Problem 1
-df = pd.read_csv('kplr_dr25_inj1_plti.csv', header = 0)
+# Problem 2
+df = pd.read_csv('kplr_dr25_inj1_tces.csv', header = 0)
 
-print('Dataset Size:')
+print('Dataset Size: ')
 print(df.shape)
 print()
 
-temp_df = df.iloc[:, 0:15]
-df_drop = temp_df[temp_df.isnull().any(axis=1)]
-temp_df = temp_df.drop(df_drop.index.values)
-temp_df = temp_df[temp_df.Recovered != 2]
+cols = ['TCE_ID', 'KIC', 'Disp', 'Score', 'period', 'epoch', 'NTL', 'SS', 'CO', 'EM', 'Expected_MES', 'MES', 'NTran',
+        'depth', 'duration', 'Rp', 'Rs', 'Ts', 'logg', 'a', 'Rp/Rs', 'a/Rs', 'impact', 'SNR_DV', 'Sp', 'Fit_Prov']
+df = df[cols]
+df.columns
 
-print('Cleaned Dataset Size:')
-print(temp_df.shape)
-print()
+df['Disp'] = df['Disp'].replace('PC', 1)
+df['Disp'] = df['Disp'].replace('FP', 0)
 
-X = temp_df.iloc[:, 1:14]
-Y = temp_df.iloc[:, 14]
+X = df.iloc[:, 10:]
+Y = df.iloc[:, 2]
 
 print('Input Size:', X.shape)
 print('Output Size:', Y.shape)
 print()
 
 # Setting up the k-fold
-kfold = StratifiedKFold(n_splits = 10, shuffle = True, random_state = 7)
+kfold = StratifiedKFold(n_splits = 5, shuffle = True, random_state = 7)
 
 # Instantiate the model
 rfc = RandomForestClassifier()
 
 # Updating the param grid
-param_grid = dict(bootstrap = ['True', 'False'],
-                  criterion = ['gini', 'entropy'],
-                  max_depth = [int(x) for x in np.linspace(start = 2, stop = 30, num = 10)],
-                  max_features = ['auto', 'sqrt', 'log2', None],
+param_grid = dict(max_depth = [int(x) for x in np.linspace(start = 2, stop = 30, num = 5)],
+                  max_features = ['sqrt', 'log2', None],
                   min_impurity_decrease = [0.00001, 0.0001, 0.001, 0.01, 0.1],
                   min_samples_split = [2, 4, 6, 8, 10],
                   min_samples_leaf = [0.10, 0.25, 0.50, 1, 2, 4],

@@ -14,44 +14,41 @@ from sklearn.model_selection import StratifiedKFold
 # Setting a random seed for reproducability
 np.random.seed(7)
 
-# Problem 1
-df = pd.read_csv('kplr_dr25_inj1_plti.csv', header = 0)
+# Problem 2
+df = pd.read_csv('kplr_dr25_inj1_tces.csv', header = 0)
 
-print('Dataset Size:')
+print('Dataset Size: ')
 print(df.shape)
 print()
 
-temp_df = df.iloc[:, 0:15]
-df_drop = temp_df[temp_df.isnull().any(axis=1)]
-temp_df = temp_df.drop(df_drop.index.values)
-temp_df = temp_df[temp_df.Recovered != 2]
+cols = ['TCE_ID', 'KIC', 'Disp', 'Score', 'period', 'epoch', 'NTL', 'SS', 'CO', 'EM', 'Expected_MES', 'MES', 'NTran',
+        'depth', 'duration', 'Rp', 'Rs', 'Ts', 'logg', 'a', 'Rp/Rs', 'a/Rs', 'impact', 'SNR_DV', 'Sp', 'Fit_Prov']
+df = df[cols]
+df.columns
 
-print('Cleaned Dataset Size:')
-print(temp_df.shape)
-print()
+df['Disp'] = df['Disp'].replace('PC', 1)
+df['Disp'] = df['Disp'].replace('FP', 0)
 
-X = temp_df.iloc[:, 1:14]
-Y = temp_df.iloc[:, 14]
+X = df.iloc[:, 10:]
+Y = df.iloc[:, 2]
 
 print('Input Size:', X.shape)
 print('Output Size:', Y.shape)
 print()
 
 # Setting up the k-fold
-kfold = StratifiedKFold(n_splits = 10, shuffle = True, random_state = 7)
+kfold = StratifiedKFold(n_splits = 5, shuffle = True, random_state = 7)
 
 # Instantiate the model
 xgb = XGBClassifier()
 
 # Updating the param grid
-param_grid = dict(booster = ['gbtree', 'gblinear', 'dart'],
-                  learning_rate = [0.0001, 0.001, 0.01, 0.1, 1.0],
-                  min_split_loss = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
-                  max_depth = [int(x) for x in np.linspace(start = 2, stop = 30, num = 10)],
+param_grid = dict(learning_rate = [0.0001, 0.001, 0.01, 0.1, 1.0],
+                  min_split_loss = [0.0, 0.2, 0.4,],
+                  max_depth = [int(x) for x in np.linspace(start = 2, stop = 30, num = 5)],
                   min_child_weight = [1, 3, 5],
-                  reg_lambda = [0.0001, 0.001, 0.01, 0.1, 0.0, 1.0],
-                  reg_alpha = [0.0001, 0.001, 0.01, 0.1, 0.0, 1.0],
-                  tree_method = ['exact', 'approx', 'hist'])
+                  reg_lambda = [0.0001, 0.001, 0.01, 0.1],
+                  reg_alpha = [0.0001, 0.001, 0.01, 0.1])
 
 print('XGBoost Classifier')
 xgb_grid_search = GridSearchCV(xgb, param_grid, scoring = 'accuracy', n_jobs = -1, cv = kfold, verbose = 1)

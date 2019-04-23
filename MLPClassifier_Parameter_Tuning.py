@@ -14,33 +14,30 @@ from sklearn.model_selection import StratifiedKFold
 # Setting a random seed for reproducability
 np.random.seed(7)
 
-df = pd.read_csv('train.csv', header = 0)
+# Problem 2
+df = pd.read_csv('kplr_dr25_inj1_tces.csv', header = 0)
 
-# Problem 1
-df = pd.read_csv('kplr_dr25_inj1_plti.csv', header = 0)
-
-print('Dataset Size:')
+print('Dataset Size: ')
 print(df.shape)
 print()
 
-temp_df = df.iloc[:, 0:15]
-df_drop = temp_df[temp_df.isnull().any(axis=1)]
-temp_df = temp_df.drop(df_drop.index.values)
-temp_df = temp_df[temp_df.Recovered != 2]
+cols = ['TCE_ID', 'KIC', 'Disp', 'Score', 'period', 'epoch', 'NTL', 'SS', 'CO', 'EM', 'Expected_MES', 'MES', 'NTran',
+        'depth', 'duration', 'Rp', 'Rs', 'Ts', 'logg', 'a', 'Rp/Rs', 'a/Rs', 'impact', 'SNR_DV', 'Sp', 'Fit_Prov']
+df = df[cols]
+df.columns
 
-print('Cleaned Dataset Size:')
-print(temp_df.shape)
-print()
+df['Disp'] = df['Disp'].replace('PC', 1)
+df['Disp'] = df['Disp'].replace('FP', 0)
 
-X = temp_df.iloc[:, 1:14]
-Y = temp_df.iloc[:, 14]
+X = df.iloc[:, 10:]
+Y = df.iloc[:, 2]
 
 print('Input Size:', X.shape)
 print('Output Size:', Y.shape)
 print()
 
 # Setting up the k-fold
-kfold = StratifiedKFold(n_splits = 10, shuffle = True, random_state = 7)
+kfold = StratifiedKFold(n_splits = 5, shuffle = True, random_state = 7)
 
 # Instantiate the model
 mlp = MLPClassifier()
@@ -49,7 +46,7 @@ mlp = MLPClassifier()
 param_grid = dict(activation = ['identity', 'logistic', 'tanh', 'relu'],
                   alpha = [0.0005, 0.0001, 0.005, 0.001, 0.01, 0.1],
                   batch_size = [32, 64, 96, 128, 256],
-                  hidden_layer_sizes = [(50, 100, 50), (100, 50, 100), (50, 100), (100, 50), (100, )],
+                  hidden_layer_sizes = [(50, 100, 50), (50, 100), (100, 50)],
                   learning_rate = ['constant', 'invscaling', 'adaptive'],
                   learning_rate_init = [0.0001, 0.001, 0.01, 0.1],
                   max_iter = [250, 500, 1000],
@@ -70,3 +67,4 @@ mlp_auroc = metrics.roc_auc_score(Y, mlp_predict_proba[1])
 mlp_aurpc = metrics.average_precision_score(Y, mlp_predict, pos_label=1)
 
 dill.dump_session('MLPClassifier_Parameter_Tuning.db')
+
