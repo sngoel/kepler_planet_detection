@@ -1,0 +1,2 @@
+#!/bin/bash
+python3 XGBClassifier_Parameter_Tuning.py; python3 ExtraTreesClassifier_Parameter_Tuning.py; python3 GaussianNB_Parameter_Tuning.py; python3 KNeighborsClassifier_Parameter_Tuning.py; python3 MLPClassifier_Parameter_Tuning.py; python3 RandomForestClassifier_Parameter_Tuning.py
